@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cyberpunk Adventure</title>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pathfinder2e TTRPG PWA</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
     />
-    <link href="style.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet"/>
     <script
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+            defer
     ></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener('DOMContentLoaded', function() {
         // Carousel functionality
-        const carousels = document.querySelectorAll(".carousel-content");
+        const carousels = document.querySelectorAll('.carousel-content');
         carousels.forEach((carousel) => {
-          const items = carousel.querySelectorAll(".carousel-item");
+          const items = carousel.querySelectorAll('.carousel-item');
           let currentIndex = 0;
 
           function showNextItem() {
-            items[currentIndex].style.opacity = "0";
+            items[currentIndex].style.opacity = '0';
             currentIndex = (currentIndex + 1) % items.length;
-            items[currentIndex].style.opacity = "1";
+            items[currentIndex].style.opacity = '1';
           }
 
           // Initial display
-          items[0].style.opacity = "1";
+          items[0].style.opacity = '1';
 
           // Auto-change every 5  seconds
           setInterval(showNextItem, 5000);
@@ -37,410 +37,562 @@
           let touchStartY = 0;
           let touchEndY = 0;
 
-          carousel.addEventListener("touchstart", (e) => {
+          carousel.addEventListener('touchstart', (e) => {
             touchStartY = e.changedTouches[0].screenY;
           });
 
-          carousel.addEventListener("touchend", (e) => {
+          carousel.addEventListener('touchend', (e) => {
             touchEndY = e.changedTouches[0].screenY;
             if (touchStartY > touchEndY) {
               showNextItem();
             } else if (touchStartY < touchEndY) {
-              items[currentIndex].style.opacity = "0";
+              items[currentIndex].style.opacity = '0';
               currentIndex = (currentIndex - 1 + items.length) % items.length;
-              items[currentIndex].style.opacity = "1";
+              items[currentIndex].style.opacity = '1';
             }
           });
         });
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileNavRail = document.getElementById('mobile-nav-rail');
+        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+        const mobileSearchBar = document.getElementById('mobile-search-bar');
+
+        mobileMenuToggle.addEventListener('click', (event) => {
+          event.stopPropagation();
+          mobileNavRail.classList.toggle('hidden');
+          mobileMenuToggle.classList.toggle('rounded-b-none');
+          mobileMenuToggle.classList.toggle('border-b-0');
+        });
+
+        mobileSearchToggle.addEventListener('click', (event) => {
+          event.stopPropagation();
+          mobileSearchBar.classList.toggle('scale-y-0');
+        });
+
+        // Close mobile nav rail and search bar when clicking outside
+        document.addEventListener('click', (event) => {
+          if (!mobileNavRail.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+            mobileNavRail.classList.add('hidden');
+            mobileMenuToggle.classList.remove('rounded-b-none');
+          }
+          if (!mobileSearchBar.contains(event.target) && !mobileSearchToggle.contains(event.target)) {
+            mobileSearchBar.classList.add('scale-y-0');
+          }
+        });
+
         // Modal functionality
-        window.toggleModal = function () {
-          const modal = document.getElementById("loginModal");
-          modal.classList.toggle("hidden");
+        window.toggleModal = function() {
+          const modal = document.getElementById('loginModal');
+          modal.classList.toggle('hidden');
         };
 
-        window.expandNavSearch = function () {
-          const container = document.querySelector(".search-container");
-          container.classList.add("expanded");
+        window.expandNavSearch = function() {
+          const container = document.querySelector('.search-container');
+          container.classList.add('expanded');
         };
 
-        window.contractNavSearch = function () {
+        window.contractNavSearch = function() {
           setTimeout(() => {
-            const container = document.querySelector(".search-container");
+            const container = document.querySelector('.search-container');
             if (!container.contains(document.activeElement)) {
-              container.classList.remove("expanded");
+              container.classList.remove('expanded');
             }
           }, 200);
         };
 
         // Theme toggle
-        window.toggleTheme = function () {
-          document.documentElement.classList.toggle("dark");
+        window.toggleTheme = function() {
+          document.documentElement.classList.toggle('dark');
         };
 
         // Close modal when clicking outside
-        const modal = document.getElementById("loginModal");
-        modal.addEventListener("click", function (e) {
+        const modal = document.getElementById('loginModal');
+        modal.addEventListener('click', function(e) {
           if (e.target === modal) {
             toggleModal();
           }
         });
 
         // Keyboard shortcuts
-        document.addEventListener("keydown", function (e) {
+        document.addEventListener('keydown', function(e) {
           // Close modal with Escape key
-          if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+          if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
             toggleModal();
           }
 
           // Focus search with / key
-          if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+          if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
             document.querySelector('input[type="text"]').focus();
           }
         });
       });
     </script>
-  </head>
-  <body class="bg-cyber-dark min-h-screen overflow-x-hidden">
-    <div class="animated-bg">
-      <div class="dice-container">
+    <style>
+        @keyframes breath {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        #mobile-nav-rail {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+        }
+        #mobile-nav-rail.hidden {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        #mobile-nav-rail:not(.hidden) {
+            max-height: 450px;
+            opacity: 1;
+        }
+        #mobile-menu-toggle {
+            position: relative;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="bg-cyber-dark min-h-screen overflow-x-hidden">
+<div class="animated-bg">
+    <div class="dice-container">
         <svg
-          aria-hidden="true"
-          class="dice-svg"
-          viewBox="-50 -50 600 600"
-          xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="dice-svg"
+                viewBox="-50 -50 600 600"
+                xmlns="http://www.w3.org/2000/svg"
         >
-          <defs>
-            <linearGradient
-              id="d20Gradient"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" />
-              <stop offset="100%" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M248 20.3L72.33 132.6 248 128.8zm16 0v108.5l175.7 3.8zm51.4 58.9c6.1 3.5 8.2 7.2 15.1 4.2 10.7.8 22.3 5.8 27.6 15.7 4.7 4.5 1.5 12.6-5.2 12.6-9.7.1-19.7-6.1-14.6-8.3 4.7-2 14.7.9 10-5.5-3.6-4.5-11-7.8-16.3-5.9-1.6 6.8-9.4 4-12-.7-2.3-5.8-9.1-8.2-15-7.9-6.1 2.7 1.6 8.8 5.3 9.9 7.9 2.2.2 7.5-4.1 5.1-4.2-2.4-15-9.6-13.5-18.3 5.8-7.39 15.8-4.62 22.7-.9zm-108.5-3.5c5.5.5 12.3 3 10.2 9.9-4.3 7-9.8 13.1-18.1 14.8-6.5 3.4-14.9 4.4-21.6 1.9-3.7-2.3-13.5-9.3-14.9-3.4-2.1 14.8.7 13.1-11.1 17.8V92.3c9.9-3.9 21.1-4.5 30.3 1.3 8 4.2 19.4 1.5 24.2-5.7 1.4-6.5-8.1-4.6-12.2-3.4-2.7-8.2 7.9-7.5 13.2-8.8zm35 69.2L55.39 149l71.21 192.9zm28.2 0l115.3 197L456.6 149zm-14.1 7.5L138.9 352.6h234.2zm133.3 21.1c13.9 8.3 21.5 26.2 22.1 43-1.3 13.6-.7 19.8-15.2 21.4-14.5 1.6-23.9-19.2-29.7-32.6-3.4-9.9-5.8-24 1.7-31.3 6.1-4.8 15-4.1 21.1-.5zm-223.7 16.1c2.1 4-.5 11.4-4.8 12.1-4.9.7-3.8-9.3-9.4-11.6-6.9-2.3-13.6 5.6-15 11.6 10.4-4 20.3 7.1 20.3 17-.4 11.7-7.9 24.8-19.7 28.1h-5.6c-12.7-.7-18.3-15.8-14.2-26.6 4.4-15.8 10.8-33.9 27.2-40.6 8.5-3.9 19 3.2 21.2 10zm213.9-8.4c-7.1-.1-4.4 10-3.3 14.5 3.5 11.5 7.3 26.6 18.9 30 6.8-1.2 4.4-12.8 3.7-16.5-4.7-10.9-7.1-23.3-19.3-28zM52 186v173.2l61.9-5.7zm408 0l-61.9 167.5 61.9 5.7zm-117.9.7l28.5 63.5-10 4.4-20-43.3c-6.1 3-13 8.9-14.6-1.4-1.3-3.9 8.5-5.1 8.1-11.9-.3-6.9 2.2-12.2 8-11.3zm-212 27.4c-2.4 5.1-4.1 10.3-2.7 15.9 1.7 8.8 13.5 6.4 15.6-.8 2.7-5 3.9-11.7-.5-15.7-4.1-3.4-8.9-2.8-12.4.6zm328.4 41.6c-.1 18.6 1.1 39.2-9.7 55.3-.9 1.2-2.2 1.9-3.7 2.5-5.8-4.1-3-11.3 1.2-15.5 1 7.3 5.5-2.9 6.6-5.6 1.3-3.2 3.6-17.7-1-10.2.7 4-6.8 13.1-9.3 8.1-5-14.4 0-30.5 7-43.5 5.7-6.2 9.9 4.4 8.9 8.9zM59.93 245.5c.59.1 1.34 1 2.48 3.6v61.1c-7.3-7-4.47-18-4.45-26.4 0-8.4 1.65-16.3-1.28-23.2-4.62-1.7-5.79-17-3.17-12.7 4.41 4.8 4.66-2.7 6.42-2.4zm178.77 7.6c8.1 4.5 13.8 14.4 10.8 23.6-2.1 15.2-27 21.1-30.4 29.7-1.2 3 25.4 1.6 30.2 1.6.5 4 1.5 10.7-3.8 11.7-14.5-1.2-29.9-.6-45.1-.6.4-11.2 7.4-21.3 17-26.8 6.9-4.9 15.4-9.3 18.1-17.9 1.8-4.5-.6-9.3-4.6-11.5-4.2-2.9-11-2.3-13.2 2.7-2 3.8-4.4 9.1-8.7 9.6-2.9.4-9 .5-7.2-4.9 1.4-5.6 3.4-11.5 8.2-15.2 8.8-6.3 19.9-6.7 28.7-2zm53.3-1.4c6.8 2.2 12 7.9 14.3 14.6 6.1 14.7 5.5 33.1-4.4 45.9-4.5 4.8-10.2 9.1-17 9.1-12.5-.1-22.4-11.1-24.8-22.8-3.1-13.4-1.8-28.7 6.9-39.8 6.8-7.6 16-10.3 25-7zm156.1 8.1c-1.6 5.9-3.3 13.4-.7 19.3 5.1-2 5.4-9.6 6.6-14.5.9-6.1-3.5-12.6-5.9-4.8zm-176.2 21.1c.6 10.5 1.7 22.8 9.7 28.2 4.9 1.8 9.7-2.2 11.1-6.7 1.9-6.3 2.3-12.9 2.4-19.4-.2-7.1-1.5-15-6.7-20.1-12.2-4.4-15.3 10.9-16.5 18zM434 266.8V328l-4.4 6.7v-42.3c-4.6 7.5-9.1 9.1-6.1-.9 6.1-7.1 4.8-17.4 10.5-24.7zM83.85 279c.8 3.6 5.12 17.8 2.04 14.8-1.97-1.3-3.62-4.9-3.41-6.1-1.55-3-2.96-6.1-4.21-9.2-2.95 4-3.96 8.3-3.14 13.4.2-1.6 1.18-2.3 3.39-.7 7.84 12.6 12.17 29.1 7.29 43.5l-2.22 1.1c-10.36-5.8-11.4-19.4-13.43-30-1.55-12.3-.79-24.7 2.3-36.7 5.2-3.8 9.16 5.4 11.39 9.9zm-7.05 20.2c-4.06 4.7-2.26 12.8-.38 18.4 1.11 5.5 6.92 10.2 6.06 1.6.69-11.1-2.33-12.7-5.68-20zm66.4 69.4L256 491.7l112.8-123.1zm-21.4.3l-53.84 4.9 64.24  41.1c-2.6-2.7-4.9-5.7-7.1-8.8-5.2-6.9-10.5-13.6-18.9-16.6-8.75-6.5-4.2-5.3 2.9-2.6-1-1.8-.7-2.6.1-2.6 2.2-.2 8.4 4.2 9.8 6.3l24.7 31.6 65.1 41.7zm268.4 0l-42.4 46.3c6.4-3.1 11.3-8.5 17-12.4 2.4-1.4 3.7-1.9 4.3-1.9 2.1 0-5.4 7.1-7.7 10.3-9.4 9.8-16 23-28.6 29.1l18.9-24.5c-2.3 1.3-6 3.2-8.2 4.1l-40.3 44 74.5-47.6c5.4-6.7 1.9-5.6-5.7-.9l-11.4 6c11.4-13.7 30.8-28.3 40-35.6 9.2-7.3 15.9-9.8 8.2-1.5l-12.6 16c10-7.6.9 3.9-4.5 5.5-.7 1-1.4 2-2.2 2.9l54.5-34.9zM236 385.8v43.4h-13.4v-30c-5-1.4-10.4 1.7-15.3-.3-3.8-2.9 1-6.8 4.5-5.9 3.3-.1 7.6.2 9.3-3.2 4.4-4.5 9.6-4.4 14.9-4zm29 .5c12.1 1.2 24.2.6 36.6.6 1.5 3 .8 7.8-3.3 7.9-7.7.3-21-1.6-25.9.6-8.2 10.5 5.7 3.8 11.4 5.2 7 1.1 15 2.9 19.1 9.2 2.1 3.1 2.7 7.3.7 10.7-5.8 6.8-17 11.5-25.3 10.9-7.3-.6-15.6-1.1-20.6-7.1-6.4-10.6 10.5-6.7 12.2-3.2 6 5.3 20.3 1.9 20.7-4.7.6-4.2-2.1-6.3-6.9-7.8-4.8-1.5-12.6 1-17.3 1.8-4.7.8-9.6.5-9-4.4.8-4.2 2.7-8.1 2.7-12.5.1-3 1.7-7 4.9-7.2zm133.5 5c-.2-.2-7 5.8-9.9 8.1l-15.8 13.1c10.6-6.5 19.3-12 25.7-21.2zm-247 14.2c2.4 0 7.5 4.6 9.4 7l26.1 31.1c-7.7-2.1-13.3-7.1-17.6-13.7-6.5-7.3-11.3-16.6-21.2-19.6-9-5-5.2-6.4 2.1-2.2-.3-1.9.2-2.6 1.2-2.6z"
-          />
+            <defs>
+                <linearGradient
+                        id="d20Gradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                >
+                    <stop offset="0%"/>
+                    <stop offset="100%"/>
+                </linearGradient>
+            </defs>
+            <path
+                    d="M248 20.3L72.33 132.6 248 128.8zm16 0v108.5l175.7 3.8zm51.4 58.9c6.1 3.5 8.2 7.2 15.1 4.2 10.7.8 22.3 5.8 27.6 15.7 4.7 4.5 1.5 12.6-5.2 12.6-9.7.1-19.7-6.1-14.6-8.3 4.7-2 14.7.9 10-5.5-3.6-4.5-11-7.8-16.3-5.9-1.6 6.8-9.4 4-12-.7-2.3-5.8-9.1-8.2-15-7.9-6.1 2.7 1.6 8.8 5.3 9.9 7.9 2.2.2 7.5-4.1 5.1-4.2-2.4-15-9.6-13.5-18.3 5.8-7.39 15.8-4.62 22.7-.9zm-108.5-3.5c5.5.5 12.3 3 10.2 9.9-4.3 7-9.8 13.1-18.1 14.8-6.5 3.4-14.9 4.4-21.6 1.9-3.7-2.3-13.5-9.3-14.9-3.4-2.1 14.8.7 13.1-11.1 17.8V92.3c9.9-3.9 21.1-4.5 30.3 1.3 8 4.2 19.4 1.5 24.2-5.7 1.4-6.5-8.1-4.6-12.2-3.4-2.7-8.2 7.9-7.5 13.2-8.8zm35 69.2L55.39 149l71.21 192.9zm28.2 0l115.3 197L456.6 149zm-14.1 7.5L138.9 352.6h234.2zm133.3 21.1c13.9 8.3 21.5 26.2 22.1 43-1.3 13.6-.7 19.8-15.2 21.4-14.5 1.6-23.9-19.2-29.7-32.6-3.4-9.9-5.8-24 1.7-31.3 6.1-4.8 15-4.1 21.1-.5zm-223.7 16.1c2.1 4-.5 11.4-4.8 12.1-4.9.7-3.8-9.3-9.4-11.6-6.9-2.3-13.6 5.6-15 11.6 10.4-4 20.3 7.1 20.3 17-.4 11.7-7.9 24.8-19.7 28.1h-5.6c-12.7-.7-18.3-15.8-14.2-26.6 4.4-15.8 10.8-33.9 27.2-40.6 8.5-3.9 19 3.2 21.2 10zm213.9-8.4c-7.1-.1-4.4 10-3.3 14.5 3.5 11.5 7.3 26.6 18.9 30 6.8-1.2 4.4-12.8 3.7-16.5-4.7-10.9-7.1-23.3-19.3-28zM52 186v173.2l61.9-5.7zm408 0l-61.9 167.5 61.9 5.7zm-117.9.7l28.5 63.5-10 4.4-20-43.3c-6.1 3-13 8.9-14.6-1.4-1.3-3.9 8.5-5.1 8.1-11.9-.3-6.9 2.2-12.2 8-11.3zm-212 27.4c-2.4 5.1-4.1 10.3-2.7 15.9 1.7 8.8 13.5 6.4 15.6-.8 2.7-5 3.9-11.7-.5-15.7-4.1-3.4-8.9-2.8-12.4.6zm328.4 41.6c-.1 18.6 1.1 39.2-9.7 55.3-.9 1.2-2.2 1.9-3.7 2.5-5.8-4.1-3-11.3 1.2-15.5 1 7.3 5.5-2.9 6.6-5.6 1.3-3.2 3.6-17.7-1-10.2.7 4-6.8 13.1-9.3 8.1-5-14.4 0-30.5 7-43.5 5.7-6.2 9.9 4.4 8.9 8.9zM59.93 245.5c.59.1 1.34 1 2.48 3.6v61.1c-7.3-7-4.47-18-4.45-26.4 0-8.4 1.65-16.3-1.28-23.2-4.62-1.7-5.79-17-3.17-12.7 4.41 4.8 4.66-2.7 6.42-2.4zm178.77 7.6c8.1 4.5 13.8 14.4 10.8 23.6-2.1 15.2-27 21.1-30.4 29.7-1.2 3 25.4 1.6 30.2 1.6.5 4 1.5 10.7-3.8 11.7-14.5-1.2-29.9-.6-45.1-.6.4-11.2 7.4-21.3 17-26.8 6.9-4.9 15.4-9.3 18.1-17.9 1.8-4.5-.6-9.3-4.6-11.5-4.2-2.9-11-2.3-13.2 2.7-2 3.8-4.4 9.1-8.7 9.6-2.9.4-9 .5-7.2-4.9 1.4-5.6 3.4-11.5 8.2-15.2 8.8-6.3 19.9-6.7 28.7-2zm53.3-1.4c6.8 2.2 12 7.9 14.3 14.6 6.1 14.7 5.5 33.1-4.4 45.9-4.5 4.8-10.2 9.1-17 9.1-12.5-.1-22.4-11.1-24.8-22.8-3.1-13.4-1.8-28.7 6.9-39.8 6.8-7.6 16-10.3 25-7zm156.1 8.1c-1.6 5.9-3.3 13.4-.7 19.3 5.1-2 5.4-9.6 6.6-14.5.9-6.1-3.5-12.6-5.9-4.8zm-176.2 21.1c.6 10.5 1.7 22.8 9.7 28.2 4.9 1.8 9.7-2.2 11.1-6.7 1.9-6.3 2.3-12.9 2.4-19.4-.2-7.1-1.5-15-6.7-20.1-12.2-4.4-15.3 10.9-16.5 18zM434 266.8V328l-4.4 6.7v-42.3c-4.6 7.5-9.1 9.1-6.1-.9 6.1-7.1 4.8-17.4 10.5-24.7zM83.85 279c.8 3.6 5.12 17.8 2.04 14.8-1.97-1.3-3.62-4.9-3.41-6.1-1.55-3-2.96-6.1-4.21-9.2-2.95 4-3.96 8.3-3.14 13.4.2-1.6 1.18-2.3 3.39-.7 7.84 12.6 12.17 29.1 7.29 43.5l-2.22 1.1c-10.36-5.8-11.4-19.4-13.43-30-1.55-12.3-.79-24.7 2.3-36.7 5.2-3.8 9.16 5.4 11.39 9.9zm-7.05 20.2c-4.06 4.7-2.26 12.8-.38 18.4 1.11 5.5 6.92 10.2 6.06 1.6.69-11.1-2.33-12.7-5.68-20zm66.4 69.4L256 491.7l112.8-123.1zm-21.4.3l-53.84 4.9 64.24  41.1c-2.6-2.7-4.9-5.7-7.1-8.8-5.2-6.9-10.5-13.6-18.9-16.6-8.75-6.5-4.2-5.3 2.9-2.6-1-1.8-.7-2.6.1-2.6 2.2-.2 8.4 4.2 9.8 6.3l24.7 31.6 65.1 41.7zm268.4 0l-42.4 46.3c6.4-3.1 11.3-8.5 17-12.4 2.4-1.4 3.7-1.9 4.3-1.9 2.1 0-5.4 7.1-7.7 10.3-9.4 9.8-16 23-28.6 29.1l18.9-24.5c-2.3 1.3-6 3.2-8.2 4.1l-40.3 44 74.5-47.6c5.4-6.7 1.9-5.6-5.7-.9l-11.4 6c11.4-13.7 30.8-28.3 40-35.6 9.2-7.3 15.9-9.8 8.2-1.5l-12.6 16c10-7.6.9 3.9-4.5 5.5-.7 1-1.4 2-2.2 2.9l54.5-34.9zM236 385.8v43.4h-13.4v-30c-5-1.4-10.4 1.7-15.3-.3-3.8-2.9 1-6.8 4.5-5.9 3.3-.1 7.6.2 9.3-3.2 4.4-4.5 9.6-4.4 14.9-4zm29 .5c12.1 1.2 24.2.6 36.6.6 1.5 3 .8 7.8-3.3 7.9-7.7.3-21-1.6-25.9.6-8.2 10.5 5.7 3.8 11.4 5.2 7 1.1 15 2.9 19.1 9.2 2.1 3.1 2.7 7.3.7 10.7-5.8 6.8-17 11.5-25.3 10.9-7.3-.6-15.6-1.1-20.6-7.1-6.4-10.6 10.5-6.7 12.2-3.2 6 5.3 20.3 1.9 20.7-4.7.6-4.2-2.1-6.3-6.9-7.8-4.8-1.5-12.6 1-17.3 1.8-4.7.8-9.6.5-9-4.4.8-4.2 2.7-8.1 2.7-12.5.1-3 1.7-7 4.9-7.2zm133.5 5c-.2-.2-7 5.8-9.9 8.1l-15.8 13.1c10.6-6.5 19.3-12 25.7-21.2zm-247 14.2c2.4 0 7.5 4.6 9.4 7l26.1 31.1c-7.7-2.1-13.3-7.1-17.6-13.7-6.5-7.3-11.3-16.6-21.2-19.6-9-5-5.2-6.4 2.1-2.2-.3-1.9.2-2.6 1.2-2.6zM19.8.2C18.4-.1 16.9 0 15.3.5L18 3.2c.4-.1.8-.2 1.2-.2 3.3 0 6 2.7 6 6 0 .4-.1.8-.2 1.2l2.7 2.7c.5-1.6.6-3.1.3-4.5C26.5 4.5 23.5.9 19.8.2z"/>
         </svg>
-      </div>
     </div>
-    <!-- Navigation Bar -->
-    <nav class="fixed w-full px-6 py-4 z-50">
-      <div class="animated-border">
+</div>
+
+<!-- Navigation Bar -->
+<nav class="fixed w-full px-6 py-4 z-50">
+    <div class="animated-border">
         <div class="glass max-w-7xl mx-auto flex items-center justify-between px-6 py-4 rounded-lg">
-          <div class="flex items-center space-x-8">
             <a href="index.html" class="text-cyber-pink text-2xl font-bold tracking-wider">Starpath</a>
+            <!-- Desktop Search Bar -->
+            <div class="hidden lg:block flex-grow mx-4">
+                <div class="search-container w-64 rounded-lg bg-transparent">
+                    <div class="glass border border-white/10 rounded-lg bg-transparent">
+                        <div class="relative">
+                            <input type="text"
+                                   placeholder="Search anything..."
+                                   class="w-full bg-transparent text-white px-4 py-2 rounded-lg focus:outline-none text-sm"
+                                   onfocus="expandNavSearch()"
+                                   onblur="contractNavSearch()">
+                        </div>
+                    </div>
 
-            <!-- Search Bar -->
-            <div class="search-container w-64 rounded-lg bg-transparent">
-              <div class="glass border border-white/10 rounded-lg bg-transparent">
-                <div class="relative">
-                  <input type="text"
-                         placeholder="Search anything..."
-                         class="w-full bg-transparent text-white px-4 py-2 rounded-lg focus:outline-none text-sm"
-                         onfocus="expandNavSearch()"
-                         onblur="contractNavSearch()">
+                    <!-- Quick Access Links -->
+                    <div class="search-links absolute top-full left-0 right-0 mt-2">
+                        <div class="glass border border-white/10 rounded-lg p-2">
+                            <div class="text-xs text-gray-500 px-2 py-1">QUICK ACCESS</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- Quick access links content -->
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-blue-metal/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-blue-metal quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-blue-metal transition-colors">Characters</span>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-purple/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-purple quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-purple transition-colors">Homebrew</span>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-blue/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-blue quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-blue transition-colors">Encounters</span>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-green/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-green quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-green transition-colors">Campaigns</span>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-yellow/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-yellow quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2"
+                                                      d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-yellow transition-colors">Crafting</span>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 rounded-full bg-cyber-pink/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-cyber-pink quick-link-icon transition-transform duration-200"
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm text-white group-hover:text-cyber-pink transition-colors">Rankings</span>
+                                    </div>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-
-              <!-- Quick Access Links -->
-              <div class="search-links absolute top-full left-0 right-0 mt-2">
-                <div class="glass border border-white/10 rounded-lg p-2">
-                  <div class="text-xs text-gray-500 px-2 py-1">QUICK ACCESS</div>
-                  <div class="grid grid-cols-2 gap-2">
-                    <!-- Quick access links content -->
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-blue-metal/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-blue-metal quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-blue-metal transition-colors">Characters</span>
-                      </div>
-                    </a>
-
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-purple/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-purple quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-purple transition-colors">Homebrew</span>
-                      </div>
-                    </a>
-
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-blue/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-blue quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-blue transition-colors">Encounters</span>
-                      </div>
-                    </a>
-
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-green/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-green quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-green transition-colors">Campaigns</span>
-                      </div>
-                    </a>
-
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-yellow/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-yellow quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-yellow transition-colors">Crafting</span>
-                      </div>
-                    </a>
-
-                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-6 h-6 rounded-full bg-cyber-pink/20 flex items-center justify-center">
-                          <svg class="w-4 h-4 text-cyber-pink quick-link-icon transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                          </svg>
-                        </div>
-                        <span class="text-sm text-white group-hover:text-cyber-pink transition-colors">Rankings</span>
-                      </div>
-                    </a>
-
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
 
-          <div class="flex items-center space-x-8">
-            <a href="compendium.html" class="text-white hover:text-cyber-blue transition-colors duration-300">Compendium</a>
-            <a href="#" class="text-white hover:text-cyber-green transition-colors duration-300">Character Builder</a>
-            <a href="#" class="text-white hover:text-cyber-purple transition-colors duration-300">Community</a>
-            <a href="#" class="text-white hover:text-cyber-yellow transition-colors duration-300">GM Tools</a>
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="compendium.html"
+                   class="text-white hover:text-cyber-blue transition-colors duration-300">Compendium</a>
+                <a href="#" class="text-white hover:text-cyber-green transition-colors duration-300">Character
+                    Builder</a>
+                <a href="#"
+                   class="text-white hover:text-cyber-purple transition-colors duration-300">Community</a>
+                <a href="#" class="text-white hover:text-cyber-yellow transition-colors duration-300">GM
+                    Tools</a>
 
-            <button onclick="toggleTheme()" class="theme-toggle p-2 rounded-lg border transition-all duration-300">            <!-- Morningstar (shows in cyber theme, switches TO dark fantasy) -->
-              <svg class="w-6 h-6 dark:block hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 4c1.5 0 2.5 1 3.5 2l1.5-1.5c1-1 2.5-1 3.5 0s1 2.5 0 3.5L19 9.5c1 1 2 2 2 3.5 0 3-2.5 5.5-5.5 5.5-1.5 0-2.5-1-3.5-2l-1.5 1.5c-1 1-2.5 1-3.5 0s-1-2.5 0-3.5L8.5 13c-1-1-2-2-2-3.5C6.5 6.5 9 4 12 4z
-                M12 8v8M8 12h8" />
-              </svg>
+                <button onclick="toggleTheme()"
+                        class="theme-toggle p-2 rounded-lg border transition-all duration-300">
+                    <!-- Morningstar (shows in cyber theme,                     switches TO dark fantasy) -->
+                    <svg class="w-6 h-6 dark:block hidden" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 4c1.5 0 2.5 1 3.5 2l1.5-1.5c1-1 2.5-1 3.5 0s1 2.5 0 3.5L19 9.5c1 1 2 2 2 3.5 0 3-2.5 5.5-5.5 5.5-1.5 0-2.5-1-3.5-2l-1.5 1.5c-1 1-2.5 1-3.5 0s-1-2.5 0-3.5L8.5 13c-1-1-2-2-2-3.5C6.5 6.5 9 4 12 4z
+                M12 8v8M8 12h8"/>
+                    </svg>
 
-              <!-- Quasar/Circuit (shows in dark fantasy theme, switches TO cyber) -->
-              <svg class="w-6 h-6 dark:hidden block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 4a4 4 0 014 4m-8 0a4 4 0 00-4 4m16 0a4 4 0 01-4 4m-8 0a4 4 0 00-4 4m8 0a4 4 0 014-4m0-8a4 4 0 00-4-4m0 16v-2m0-12v-2m-6 8h2m12 0h2" />
-              </svg>
-            </button>
+                    <!-- Quasar/Circuit (shows in dark fantasy theme, switches TO cyber) -->
+                    <svg class="w-6 h-6 dark:hidden block"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 4a4 4 0 014 4m-8 0a4 4 0 00-4 4m16 0a4 4 0 01-4 4m-8 0a4 4 0 00-4 4m8 0a4 4 0 014-4m0-8a4 4 0 00-4-4m0 16v-2m0-12v-2m-6 8h2m12 0h2"/>
+                    </svg>
+                </button>
 
-            <button onclick="toggleModal()" class="sign-in-btn px-4 py-2 rounded-lg border transition-all duration-300">
-              Sign In
-            </button>
-          </div>
+                <button onclick="toggleModal()"
+                        class="sign-in-btn px-4 py-2 rounded-lg border transition-all duration-300">
+                    Sign In
+                </button>
+            </div>
+
+            <!-- Mobile menu button and navigation rail -->
+            <div class="lg:hidden fixed top-[12px] right-6 z-50 w-[58px]">
+                <div class="flex flex-col items-end">
+                    <button id="mobile-menu-toggle"
+                            class="text-white focus:outline-none p-2 rounded-lg border border-cyber-blue/50 hover:border-cyber-pink transition-colors duration-200 w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                        </svg>
+                    </button>
+                    <div id="mobile-nav-rail" class="hidden bg-cyber-dark/80 backdrop-blur-sm border border-t-0 border-cyber-blue/50 rounded-b-lg overflow-hidden w-full">
+                        <div class="flex flex-col items-center py-4 px-2 space-y-4">
+                            <button id="mobile-search-toggle" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                            <a href="compendium.html" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253" />
+                                </svg>
+                            </a>
+                            <a href="#" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </a>
+                            <a href="#" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </a>
+                            <a href="#" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                </svg>
+                            </a>
+                            <button onclick="toggleTheme()" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                </svg>
+                            </button>
+                            <button onclick="toggleModal()" class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Hero Section -->
-    <main class="pt-32 px-6 relative z-10">
-      <div class="max-w-7xl mx-auto text-center">
+<div id="mobile-search-bar" class="fixed top-24 left-4 right-4 bg-cyber-dark/90 backdrop-blur-[2px] rounded-lg p-4 transform scale-y-0 origin-top transition-transform duration-300 ease-in-out z-40 lg:hidden h-16">
+    <div class="relative h-full">
+        <input type="text" placeholder="Search anything..." class="w-full h-full bg-transparent text-white px-4 py-2 rounded-lg focus:outline-none text-sm border border-cyber-blue/50">
+        <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-cyber-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </button>
+    </div>
+</div>
+<!-- Main Section -->
+<main class="pt-32 px-6 relative z-10">
+    <div class="max-w-7xl mx-auto text-center">
         <h1 class="text-6xl font-bold text-white mb-6">
-          Your Next <span class="text-cyber-pink">Adventure</span> Awaits
+            Your Next <span class="text-cyber-pink">Adventure</span> Awaits
         </h1>
         <p class="text-xl text-cyber-blue mb-8">
-          Embark on an epic journey through digital realms
+            Embark on an epic journey through digital realms
         </p>
-      </div>
+    </div>
 
-      <div class="max-w-7xl mx-auto mt-20 px-6 space-y-20 lg:space-y-0 lg:space-x-20">
+    <div class="max-w-7xl mx-auto mt-20 px-6 space-y-20 lg:space-y-0 lg:space-x-20">
         <div
-          class="flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-8"
+                class="flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-8"
         >
-          <div class="glassmorphism-carousel w-full lg:w-1/3 p-6">
-            <div class="carousel-content">
-              <div class="carousel-item">
-                <h3 class="text-cyber-purple text-2xl font-bold mb-2">Latest Update</h3>
-                <p class="text-cyber-silver">New character classes and ancestries available now!</p>
-              </div>
-              <div class="carousel-item">
-                <h3 class="text-cyber-green text-2xl font-bold mb-2">Community Event</h3>
-                <p class="text-cyber-silver">Join our weekly dungeon crawl every Saturday!</p>
-              </div>
+            <div class="glassmorphism-carousel w-full lg:w-1/3 p-6">
+                <div class="carousel-content">
+                    <div class="carousel-item">
+                        <h3 class="text-cyber-purple text-2xl font-bold mb-2">Latest Update</h3>
+                        <p class="text-cyber-silver">New character classes and ancestries available now!</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h3 class="text-cyber-green text-2xl font-bold mb-2">Community Event</h3>
+                        <p class="text-cyber-silver">Join our weekly dungeon crawl every Saturday!</p>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="flex flec-col items-center justify-center">
-            <button
-              class="px-8 py-4 bg-gradient-to-r from-cyber-pink to-cyber-purple text-white font-bold rounded-lg hover:from-cyber-purple hover:to-cyber-pink transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,42,109,0.4)] transform hover:scale-105"
-            >
-              Begin Your Quest
-            </button>
-          </div>
-          <div class="glassmorphism-carousel w-full lg:w-1/3 p-6">
-            <div class="carousel-content">
-              <div class="carousel-item">
-                <h3 class="text-cyber-green text-2xl font-bold mb-2">Featured Content</h3>
-                <p class="text-cyber-silver">Explore the new War of Immortals book!</p>
-              </div>
-              <div class="carousel-item">
-                <h3 class="text-cyber-purple text-2xl font-bold mb-2">Upcoming Release</h3>
-                <p class="text-cyber-silver">Get ready for the Starfinder crossover event!</p>
-              </div>
+            <div class="flex flec-col items-center justify-center">
+                <button
+                        class="px-8 py-4 bg-gradient-to-r from-cyber-pink to-cyber-purple text-white font-bold rounded-lg hover:from-cyber-purple hover:to-cyber-pink transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,42,109,0.4)] transform hover:scale-105"
+                >
+                    Begin Your Quest
+                </button>
             </div>
-          </div>
+            <div class="glassmorphism-carousel w-full lg:w-1/3 p-6">
+                <div class="carousel-content">
+                    <div class="carousel-item">
+                        <h3 class="text-cyber-green text-2xl font-bold mb-2">Featured Content</h3>
+                        <p class="text-cyber-silver">Explore the new War of Immortals book!</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h3 class="text-cyber-purple text-2xl font-bold mb-2">Upcoming Release</h3>
+                        <p class="text-cyber-silver">Get ready for the Starfinder crossover event!</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Login Modal -->
+    <!-- Login Modal -->
 
-      <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
         <div class="modal-glass w-[420px] rounded-xl">
-          <div class="p-8">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl text-white font-bold tracking-wide">Welcome Back</h2>
-              <button onclick="toggleModal()" class="modal-close p-1.5 text-gray-400 hover:text-white transition-colors duration-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl text-white font-bold tracking-wide">Welcome Back</h2>
+                    <button onclick="toggleModal()"
+                            class="modal-close p-1.5 text-gray-400 hover:text-white transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-4">
+                        <button class="provider-button w-full text-white py-3 rounded-lg flex items-center justify-center space-x-3">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                      d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                            </svg>
+                            <span class="text-sm font-semibold">Continue with Google</span>
+                        </button>
+
+                        <button class="provider-button w-full text-white py-3 rounded-lg flex items-center justify-center space-x-3">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                      d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+                            </svg>
+                            <span class="text-sm font-semibold">Continue with Apple</span>
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-white/10"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 text-gray-400 bg-cyber-dark/50 backdrop-blur-sm">or continue with email</span>
+                        </div>
+                    </div>
+
+                    <form class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-sm text-gray-400">Email</label>
+                            <input type="email"
+                                   class="auth-input w-full text-white px-4 py-3 rounded-lg focus:outline-none"
+                                   placeholder="Enter your email">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-sm text-gray-400">Password</label>
+                            <input type="password"
+                                   class="auth-input w-full text-white px-4 py-3 rounded-lg focus:outline-none"
+                                   placeholder="••••••••">
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox"
+                                       class="rounded border-gray-600 text-cyber-pink focus:ring-cyber-pink">
+                                <span class="text-gray-400">Remember me</span>
+                            </label>
+                            <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors">Forgot
+                                password?</a>
+                        </div>
+
+                        <button class="w-full bg-gradient-to-r from-cyber-pink to-cyber-purple text-white font-bold py-3 rounded-lg hover:from-cyber-purple hover:to-cyber-pink transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,42,109,0.4)]">
+                            Sign In
+                        </button>
+                    </form>
+
+                    <p class="text-center text-gray-400 text-sm">
+                        Don't have an account?
+                        <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors">Sign up</a>
+                    </p>
+                </div>
             </div>
-
-            <div class="space-y-6">
-              <div class="space-y-4">
-                <button class="provider-button w-full text-white py-3 rounded-lg flex items-center justify-center space-x-3">
-                  <svg class="w-6 h-6" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
-                  </svg>
-                  <span class="text-sm font-semibold">Continue with Google</span>
-                </button>
-
-                <button class="provider-button w-full text-white py-3 rounded-lg flex items-ce</svg>nter justify-center space-x-3">
-                  <svg class="w-6 h-6" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
-                  </svg>
-                  <span class="text-sm font-semibold">Continue with Apple</span>
-                </button>
-              </div>
-
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center">
-                  <div class="w-full border-t border-white/10"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                  <span class="px-2 text-gray-400 bg-cyber-dark/50 backdrop-blur-sm">or continue with email</span>
-                </div>
-              </div>
-
-              <form class="space-y-4">
-                <div class="space-y-1">
-                  <label class="text-sm text-gray-400">Email</label>
-                  <input type="email"
-                         class="auth-input w-full text-white px-4 py-3 rounded-lg focus:outline-none"
-                         placeholder="Enter your email">
-                </div>
-
-                <div class="space-y-1">
-                  <label class="text-sm text-gray-400">Password</label>
-                  <input type="password"
-                         class="auth-input w-full text-white px-4 py-3 rounded-lg focus:outline-none"
-                         placeholder="••••••••">
-                </div>
-
-                <div class="flex items-center justify-between text-sm">
-                  <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" class="rounded border-gray-600 text-cyber-pink focus:ring-cyber-pink">
-                    <span class="text-gray-400">Remember me</span>
-                  </label>
-                  <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors">Forgot password?</a>
-                </div>
-
-                <button class="w-full bg-gradient-to-r from-cyber-pink to-cyber-purple text-white font-bold py-3 rounded-lg hover:from-cyber-purple hover:to-cyber-pink transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,42,109,0.4)]">
-                  Sign In
-                </button>
-              </form>
-
-              <p class="text-center text-gray-400 text-sm">
-                Don't have an account?
-                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors">Sign up</a>
-              </p>
-            </div>
-          </div>
         </div>
-      </div>
-    </main>
+    </div>
+</main>
 
-    <footer class="mt-32 border-top none">
-      <div class="max-w-7xl mx-auto px-6 py-12">
+<footer class="mt-32 border-top none">
+    <div class="max-w-7xl mx-auto px-6 py-12">
         <div class="grid grid-cols-3 gap-8">
-          <!-- Left Section -->
-          <div class="space-y-4">
-            <div class="text-cyber-pink text-xl font-bold tracking-wider">STARPATH</div>
-            <p class="text-gray-400 text-sm">
-              Open-source tabletop gaming platform. Building the future of digital role-playing experiences.
-            </p>
-            <a href="#" class="inline-flex items-center space-x-2 text-sm text-cyber-blue hover:text-cyber-pink transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>License & Terms</span>
-            </a>
-          </div>
+            <!-- Left Section -->
+            <div class="space-y-4">
+                <div class="text-cyber-pink text-xl font-bold tracking-wider">STARPATH</div>
+                <p class="text-gray-400 text-sm">
+                    Open-source tabletop gaming platform. Building the future of digital role-playing experiences.
+                </p>
+                <a href="#"
+                   class="inline-flex items-center space-x-2 text-sm text-cyber-blue hover:text-cyber-pink transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <span>License & Terms</span>
+                </a>
+            </div>
 
-          <!-- Middle Section - Social Links -->
-          <div class="flex flex-col items-center space-y-6">
-            <div class="flex space-x-6">
-              <a href="#" class="text-gray-400 hover:text-cyber-purple transition-colors">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-cyber-pink transition-colors">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M14.4429 19.5C14.4429 19.5 14.1707 19.1716 13.9393 18.8784C15.4536 18.4463 16.0429 17.5241 16.0429 17.5241C15.5657 17.8173 15.1114 18.0241 14.4429 18.1641C13.5657 18.4103 12.7114 18.5503 11.8571 18.6232C10.115 18.8062 8.51571 18.7097 7.12857 18.4931C6.05357 18.3297 5.12857 18.0825 4.34286 17.8173C3.91429 17.6773 3.45 17.5134 2.98571 17.3019C2.94643 17.2784 2.90714 17.2548 2.86786 17.2313C2.82857 17.2078 2.80893 17.1959 2.78929 17.184C2.55714 17.0677 2.42857 16.9862 2.42857 16.9862C2.42857 16.9862 2.99357 17.8848 4.45714 18.3297C4.22571 18.6232 3.93429 18.9634 3.93429 18.9634C1.575 18.8998 0.6 17.3019 0.6 17.3019C0.6 12.4974 2.72143 8.59808 2.72143 8.59808C4.84286 6.99241 6.86786 7.04048 6.86786 7.04048L7.02857 7.2284C5.12857 7.85654 4.25357 8.79546 4.25357 8.79546C4.25357 8.79546 4.53214 8.64355 4.98214 8.43971C6.45 7.81157 6.84643 7.68171 7.32857 7.64594C7.38214 7.63364 7.42857 7.62134 7.475 7.62134C8.25 7.52521 9.12857 7.50061 10.0464 7.57329C11.2607 7.67172 12.5786 7.95788 13.9179 8.5387C13.9179 8.5387 13.0821 7.64594 11.3 7.01779L11.5179 7.04048C11.5179 7.04048 13.5429 6.99241 15.6643 8.59808C15.6643 8.59808 17.7857 12.4974 17.7857 17.3019C17.7857 17.3019 16.8 18.8998 14.4429 18.9634ZM8.975 11.4901C8.175 11.4901 7.54286 12.1786 7.54286 13.0239C7.54286 13.8692 8.1875 14.5576 8.975 14.5576C9.775 14.5576 10.4071 13.8692 10.4071 13.0239C10.4196 12.1786 9.775 11.4901 8.975 11.4901ZM13.4821 11.4901C12.6821 11.4901 12.05 12.1786 12.05 13.0239C12.05 13.8692 12.6946 14.5576 13.4821 14.5576C14.2821 14.5576 14.9143 13.8692 14.9143 13.0239C14.9143 12.1786 14.2821 11.4901 13.4821 11.4901Z"/>
-                </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-cyber-green transition-colors">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M22.0717 5.62336C21.4602 5.91312 20.8062 6.10713 20.1207 6.19813C20.8217 5.77238 21.3557 5.0937 21.6052 4.26159C20.9512 4.66834 20.2322 4.95911 19.4672 5.11612C18.8482 4.42844 17.9612 4 16.9952 4C15.1277 4 13.6187 5.53902 13.6187 7.40653C13.6187 7.69629 13.6477 7.97705 13.7167 8.24332C10.9092 8.08731 8.39725 6.70479 6.72775 4.63234C6.40925 5.17284 6.22425 5.77238 6.22425 6.42506C6.22425 7.63484 6.81475 8.71062 7.72175 9.31916C7.16325 9.31916 6.63375 9.14865 6.17525 8.89138V8.92838C6.17525 10.5674 7.33075 11.9409 8.85775 12.2757C8.26725 12.4462 7.65775 12.4462 7.06725 12.2757C7.42375 13.0068 7.99675 13.6235 8.70975 14.0397C9.42275 14.456 10.2392 14.6501 11.0727 14.5969C9.73116 15.6457 8.07066 16.2183 6.35125 16.2093C6.05175 16.2093 5.75225 16.1903 5.45275 16.1523C7.13575 17.2091 9.13525 17.8158 11.2577 17.8158C16.9952 17.8158 20.1207 12.9994 20.1207 8.83736L20.1102 8.35486C20.7747 7.87236 21.3557 7.26382 21.8242 6.57614C21.2657 6.84241 20.6747 7.02192 20.0522 7.11292L22.0717 5.62336Z"/>
-                </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-cyber-yellow transition-colors">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-cyber-blue transition-colors">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M14.4 3.2c-.8-.2-1.6-.3-2.4-.3-4.4 0-8 3.6-8 8 0 4.4 3.6 8 8 8 4.4 0 8-3.6 8-8 0-.8-.1-1.6-.3-2.4l-1.7 1.7c.1.3.1.5.1.7 0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6c.2 0 .4 0 .7.1L14.4 3.2zM19.8.2C18.4-.1 16.9 0 15.3.5L18 3.2c.4-.1.8-.2 1.2-.2 3.3 0 6 2.7 6 6 0 .4-.1.8-.2 1.2l2.7 2.7c.5-1.6.6-3.1.3-4.5C26.5 4.5 23.5.9 19.8.2z"/>
-                </svg>
-              </a>
+            <!-- Middle Section - Social Links -->
+            <div class="flex flex-col items-center space-y-6">
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-cyber-purple transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-cyber-pink transition-colors">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14.4429 19.5C14.4429 19.5 14.1707 19.1716 13.9393 18.8784C15.4536 18.4463 16.0429 17.5241 16.0429 17.5241C15.5657 17.8173 15.1114 18.0241 14.4429 18.1641C13.5657 18.4103 12.7114 18.5503 11.8571 18.6232C10.115 18.8062 8.51571 18.7097 7.12857 18.4931C6.05357 18.3297 5.12857 18.0825 4.34286 17.8173C3.91429 17.6773 3.45 17.5134 2.98571 17.3019C2.94643 17.2784 2.90714 17.2548 2.86786 17.2313C2.82857 17.2078 2.80893 17.1959 2.78929 17.184C2.55714 17.0677 2.42857 16.9862 2.42857 16.9862C2.42857 16.9862 2.99357 17.8848 4.45714 18.3297C4.22571 18.6232 3.93429 18.9634 3.93429 18.9634C1.575 18.8998 0.6 17.3019 0.6 17.3019C0.6 12.4974 2.72143 8.59808 2.72143 8.59808C4.84286 6.99241 6.86786 7.04048 6.86786 7.04048L7.02857 7.2284C5.12857 7.85654 4.25357 8.79546 4.25357 8.79546C4.25357 8.79546 4.53214 8.64355 4.98214 8.43971C6.45 7.81157 6.84643 7.68171 7.32857 7.64594C7.38214 7.63364 7.42857 7.62134 7.475 7.62134C8.25 7.52521 9.12857 7.50061 10.0464 7.57329C11.2607 7.67172 12.5786 7.95788 13.9179 8.5387C13.9179 8.5387 13.0821 7.64594 11.3 7.01779L11.5179 7.04048C11.5179 7.04048 13.5429 6.99241 15.6643 8.59808C15.6643 8.59808 17.7857 12.4974 17.7857 17.3019C17.7857 17.3019 16.8 18.8998 14.4429 18.9634ZM8.975 11.4901C8.175 11.4901 7.54286 12.1786 7.54286 13.0239C7.54286 13.8692 8.1875 14.5576 8.975 14.5576C9.775 14.5576 10.4071 13.8692 10.4071 13.0239C10.4196 12.1786 9.775 11.4901 8.975 11.4901ZM13.4821 11.4901C12.6821 11.4901 12.05 12.1786 12.05 13.0239C12.05 13.8692 12.6946 14.5576 13.4821 14.5576C14.2821 14.5576 14.9143 13.8692 14.9143 13.0239C14.9143 12.1786 14.2821 11.4901 13.4821 11.4901Z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-cyber-green transition-colors">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.0717 5.62336C21.4602 5.91312 20.8062 6.10713 20.1207 6.19813C20.8217 5.77238 21.3557 5.0937 21.6052 4.26159C20.9512 4.66834 20.2322 4.95911 19.4672 5.11612C18.8482 4.42844 17.9612 4 16.9952 4C15.1277 4 13.6187 5.53902 13.6187 7.40653C13.6187 7.69629 13.6477 7.97705 13.7167 8.24332C10.9092 8.08731 8.39725 6.70479 6.72775 4.63234C6.40925 5.17284 6.22425 5.77238 6.22425 6.42506C6.22425 7.63484 6.81475 8.71062 7.72175 9.31916C7.16325 9.31916 6.63375 9.14865 6.17525 8.89138V8.92838C6.17525 10.5674 7.33075 11.9409 8.85775 12.2757C8.26725 12.4462 7.65775 12.4462 7.06725 12.2757C7.42375 13.0068 7.99675 13.6235 8.70975 14.0397C9.42275 14.456 10.2392 14.6501 11.0727 14.5969C9.73116 15.6457 8.07066 16.2183 6.35125 16.2093C6.05175 16.2093 5.75225 16.1903 5.45275 16.1523C7.13575 17.2091 9.13525 17.8158 11.2577 17.8158C16.9952 17.8158 20.1207 12.9994 20.1207 8.83736L20.1102 8.35486C20.7747 7.87236 21.3557 7.26382 21.8242 6.57614C21.2657 6.84241 20.6747 7.02192 20.0522 7.11292L22.0717 5.62336Z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-cyber-yellow transition-colors">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    © 2025 sengokudaikon. All rights reserved.
+                </div>
             </div>
-            <div class="text-gray-500 text-sm">
-              © 2025 sengokudaikon. All rights reserved.
-            </div>
-          </div>
 
-          <!-- Right Section -->
-          <div class="flex flex-col items-end space-y-4">
-            <div class="space-y-2">
-              <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">About Us</a>
-              <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">Contact</a>
-              <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">Support</a>
+            <!-- Right Section -->
+            <div class="flex flex-col items-end space-y-4">
+                <div class="space-y-2">
+                    <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">About
+                        Us</a>
+                    <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">Contact</a>
+                    <a href="#" class="block text-gray-400 hover:text-cyber-blue transition-colors text-sm text-right">Support</a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </footer>
-  </body>
+    </div>
+</footer>
+</body>
 </html>
