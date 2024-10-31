@@ -11,8 +11,8 @@ async function loadComponent(elementId, componentPath) {
   
   // Load all components when the page loads
   document.addEventListener('DOMContentLoaded', async () => {
-    await loadComponent('navbar-container', 'navbar.html');
-    await loadComponent('footer-container', 'footer.html');
-    await loadComponent('modal-container', 'login-modal.html');
+    await loadComponent('navbar-container', '/navbar.html');
+    await loadComponent('footer-container', '/footer.html');
+    await loadComponent('modal-container', '/login-modal.html');
   });
   
