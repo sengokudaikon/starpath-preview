@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compendium - Pathfinder2e TTRPG PWA</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+    <script src="utils/load-components.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Modal functionality
+        window.toggleModal = function () {
+          const modal = document.getElementById("loginModal");
+          modal.classList.toggle("hidden");
+        };
+
+        // Search functionality
+        window.expandNavSearch = function () {
+          const container = document.querySelector(".search-container");
+          container.classList.add("expanded");
+        };
+
+        window.contractNavSearch = function () {
+          setTimeout(() => {
+            const container = document.querySelector(".search-container");
+            if (!container.contains(document.activeElement)) {
+              container.classList.remove("expanded");
+            }
+          }, 200);
+        };
+
+        window.expandCompendiumSearch = function () {
+          const container = document.getElementById(
+            "compendiumSearchContainer"
+          );
+          container.classList.add("expanded");
+        };
+
+        window.contractCompendiumSearch = function () {
+          setTimeout(() => {
+            const container = document.getElementById(
+              "compendiumSearchContainer"
+            );
+            const input = container.querySelector("input");
+            if (!container.contains(document.activeElement) && !input.value) {
+              container.classList.remove("expanded");
+            }
+          }, 200);
+        };
+
+        // Close modal when clicking outside
+        const modal = document.getElementById("loginModal");
+        modal.addEventListener("click", function (e) {
+          if (e.target === modal) {
+            toggleModal();
+          }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            // Focus the appropriate search based on current page
+            if (window.location.pathname.includes("compendium")) {
+              document
+                .querySelector("#compendiumSearchContainer input")
+                .focus();
+            } else {
+              document.querySelector("#navSearchContainer input").focus();
+            }
+          }
+        });
+      });
+    </script>
+  </head>
+  <body
+    class="bg-cyber-dark min-h-screen bg-cyber-pattern bg-[size:50px_50px] flex flex-col"
+  >
+    <!-- Navigation Bar -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex mt-24 px-4 py-8">
+      <div x-data="{ expanded: false }" class="flex w-full">
+        <!-- Sidebar -->
+        <div class="relative h-full z-10">
+          <button
+            @click="expanded = !expanded"
+            class="absolute -top-0 -left-0 z-20 p-2 rounded-2xl border border-cyber-blue/50 hover:border-cyber-pink transition-colors duration-200 theme-toggle"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+          <div
+            :class="{ 
+                        'w-64 opacity-100 sidebar-glow': expanded, 
+                        'w-0 opacity-0': !expanded 
+                    }"
+            class="transition-all duration-300 ease-in-out h-full sidebar-glass overflow-hidden rounded-2xl"
+          >
+            <nav class="p-4 pt-16">
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200"
+                    @click="$dispatch('category-selected', 'Ancestries')"
+                    >Ancestries</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200"
+                    @click="$dispatch('category-selected', 'Backgrounds')"
+                    >Backgrounds</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200"
+                    @click="$dispatch('category-selected', 'Classes')"
+                    >Classes</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200"
+                    @click="$dispatch('category-selected', 'Heritages')"
+                    >Heritages</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200"
+                    @click="$dispatch('category-selected', 'Feats')"
+                    >Feats</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Spacer -->
+        <div class="w-14"></div>
+
+        <!-- Active Window -->
+        <div class="flex-grow">
+          <!-- Search Bar -->
+          <div
+            id="compendiumSearchContainer"
+            class="search-container w-full mb-4 rounded-lg bg-transparent"
+          >
+            <div class="glass border border-white/10 rounded-lg bg-transparent">
+              <div class="relative">
+                <input
+                  type="text"
+                  placeholder="Search the compendium..."
+                  class="w-full bg-transparent text-white px-4 py-2 rounded-lg focus:outline-none text-sm"
+                  onfocus="expandCompendiumSearch()"
+                  onblur="contractCompendiumSearch()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="flex space-x-2 mb-4">
+            <select class="filter-select">
+              <option>All Categories</option>
+              <option>Ancestries</option>
+              <option>Backgrounds</option>
+              <option>Classes</option>
+            </select>
+            <select class="filter-select">
+              <option>All Levels</option>
+              <option>Level 1</option>
+              <option>Level 2</option>
+              <option>Level 3</option>
+            </select>
+          </div>
+
+          <!-- Results Area -->
+          <div
+            class="space-y-4 overflow-y-auto max-h-[calc(100vh-16rem)]"
+            x-data="{ expanded: null, selectedCategory: null }"
+            @category-selected.window="selectedCategory = $event.detail"
+          >
+            <template x-if="selectedCategory">
+              <div>
+                <h2
+                  x-text="selectedCategory"
+                  class="text-2xl font-bold text-cyber-pink mb-4"
+                ></h2>
+                <!-- Sample cards, replace with dynamic content -->
+                <div
+                  class="glass border border-cyber-blue/30 rounded-lg p-4 cursor-pointer hover:border-cyber-pink transition-all duration-200"
+                  @click="expanded === 1 ? expanded = null : expanded = 1"
+                >
+                  <h3 class="text-cyber-blue text-lg font-semibold">Elf</h3>
+                  <p class="text-white" x-show="expanded !== 1">
+                    Elves are a tall, slender, long-lived people known for their
+                    grace and mastery of magic...
+                  </p>
+                  <div x-show="expanded === 1" class="mt-2 text-white">
+                    <p>
+                      Elves are a tall, slender, long-lived people known for
+                      their grace and mastery of magic. They have a deep
+                      connection to nature and a rich cultural heritage that
+                      spans millennia. Elves are known for their pointed ears,
+                      almond-shaped eyes, and ethereal beauty.
+                    </p>
+                    <p class="mt-2">Traits:</p>
+                    <ul class="list-disc list-inside">
+                      <li>+2 Dexterity, +2 Intelligence, -2 Constitution</li>
+                      <li>Low-Light Vision</li>
+                      <li>Elven Immunities</li>
+                      <li>Elven Magic</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div
+                  class="glass border border-cyber-blue/30 rounded-lg p-4 cursor-pointer hover:border-cyber-pink transition-all duration-200 mt-4"
+                  @click="expanded === 2 ? expanded = null : expanded = 2"
+                >
+                  <h3 class="text-cyber-blue text-lg font-semibold">Wizard</h3>
+                  <p class="text-white" x-show="expanded !== 2">
+                    Wizards are scholarly magic-users capable of manipulating
+                    the fundamental structures of reality...
+                  </p>
+                  <div x-show="expanded === 2" class="mt-2 text-white">
+                    <p>
+                      Wizards are scholarly magic-users capable of manipulating
+                      the fundamental structures of reality. Through years of
+                      study and practice, they master complex arcane formulas
+                      and intricate gestures to cast powerful spells. Wizards
+                      are known for their vast knowledge and ability to adapt to
+                      various situations through their prepared spells.
+                    </p>
+                    <p class="mt-2">Key Features:</p>
+                    <ul class="list-disc list-inside">
+                      <li>Arcane Spellcasting</li>
+                      <li>Arcane School Specialization</li>
+                      <li>Arcane Thesis</li>
+                      <li>Arcane Bond</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+    <div id="modal-container"></div>
+    <script src="themeManager.js"></script>
+  </body>
+</html>
