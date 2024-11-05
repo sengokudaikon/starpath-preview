@@ -1,0 +1,28 @@
+---
+import { UIPerformanceBench } from "../benchmarks/uiPerformance/UIPerformanceBench";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>UI Performance Benchmark - Astro + Solid + Tauri</title>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navigation">
+        <a href="/">Home</a> | 
+        <a href="/benchmark">Mandelbrot</a> |
+        <a href="/infinite-scroll">Infinite Scroll</a> |
+        <a href="/component-tree">Component Tree</a> |
+        <a href="/ui-performance">UI Performance</a>
+      </nav>
+      <h1>UI Performance Benchmark</h1>
+      <div id="benchmark-container">
+        <UIPerformanceBench client:only="solid" />
+      </div>
+    </div>
+  </body>
+</html>
