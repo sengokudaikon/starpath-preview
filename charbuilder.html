@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Character Builder - Pathfinder2e TTRPG PWA</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet"/>
+    <script
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+            defer
+    ></script>
+    <script src="themeManager.js"></script>
+    <!-- Keep the same scripts from compendium.html -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Keep all the existing event listeners and functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileNavRail = document.getElementById('mobile-nav-rail');
+        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+        const mobileSearchBar = document.getElementById('mobile-search-bar');
+
+        mobileMenuToggle.addEventListener('click', (event) => {
+          event.stopPropagation();
+          mobileNavRail.classList.toggle('hidden');
+          mobileMenuToggle.classList.toggle('rounded-b-none');
+          mobileMenuToggle.classList.toggle('border-b-0');
+        });
+
+        mobileSearchToggle.addEventListener('click', (event) => {
+          event.stopPropagation();
+          mobileSearchBar.classList.toggle('scale-y-0');
+        });
+
+        // Close mobile nav rail and search bar when clicking outside
+        document.addEventListener('click', (event) => {
+          if (!mobileNavRail.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+            mobileNavRail.classList.add('hidden');
+            mobileMenuToggle.classList.remove('rounded-b-none');
+          }
+          if (!mobileSearchBar.contains(event.target) && !mobileSearchToggle.contains(event.target)) {
+            mobileSearchBar.classList.add('scale-y-0');
+          }
+        });
+        // Modal functionality
+        window.toggleModal = function() {
+          const modal = document.getElementById('loginModal');
+          modal.classList.toggle('hidden');
+        };
+
+        // Search functionality
+        window.expandNavSearch = function() {
+          const container = document.querySelector('.search-container');
+          container.classList.add('expanded');
+        };
+
+        window.contractNavSearch = function() {
+          setTimeout(() => {
+            const container = document.querySelector('.search-container');
+            if (!container.contains(document.activeElement)) {
+              container.classList.remove('expanded');
+            }
+          }, 200);
+        };
+
+        window.expandCompendiumSearch = function() {
+          const container = document.getElementById(
+              'compendiumSearchContainer',
+          );
+          container.classList.add('expanded');
+        };
+
+        window.contractCompendiumSearch = function() {
+          setTimeout(() => {
+            const container = document.getElementById(
+                'compendiumSearchContainer',
+            );
+            const input = container.querySelector('input');
+            if (!container.contains(document.activeElement) && !input.value) {
+              container.classList.remove('expanded');
+            }
+          }, 200);
+        };
+
+        // Close modal when clicking outside
+        const modal = document.getElementById('loginModal');
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            toggleModal();
+          }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+          if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            // Focus the appropriate search based on current page
+            if (window.location.pathname.includes('compendium')) {
+              document.querySelector('#compendiumSearchContainer input').focus();
+            } else {
+              document.querySelector('#navSearchContainer input').focus();
+            }
+          }
+        });
+        // Add infinite scroll functionality
+        let loading = false;
+        const loadMoreContent = () => {
+          if (loading) return;
+          
+          const scrollPosition = window.innerHeight + window.pageYOffset;
+          const pageBottom = document.documentElement.offsetHeight - 1000;
+          
+          if (scrollPosition >= pageBottom) {
+            loading = true;
+            
+            // Simulate loading more content
+            setTimeout(() => {
+              const contentContainer = document.querySelector('#character-content');
+              // Add your content here
+              loading = false;
+            }, 1000);
+          }
+        };
+
+        window.addEventListener('scroll', loadMoreContent);
+      });
+    </script>
+    <style>
+        @keyframes breath {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        #mobile-nav-rail {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+        }
+
+        #mobile-nav-rail.hidden {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        #mobile-nav-rail:not(.hidden) {
+            max-height: 450px;
+            opacity: 1;
+        }
+
+        #mobile-menu-toggle {
+            position: relative;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="bg-cyber-dark min-h-screen overflow-x-hidden">
+    <!-- Keep the same nav section from compendium.html -->
+    <nav class="fixed w-full px-6 py-4 z-50">
+        <div class="animated-border">
+            <div class="glass max-w-7xl mx-auto flex items-center justify-between px-6 py-4 rounded-lg">
+                <a href="index.html" class="text-cyber-pink text-2xl font-bold tracking-wider">Starpath</a>
+    
+                <!-- Desktop Search Bar -->
+                <div class="hidden lg:block flex-grow mx-4">
+                    <div class="search-container w-64 rounded-lg bg-transparent">
+                        <div class="glass border border-white/10 rounded-lg bg-transparent">
+                            <div class="relative">
+                                <input type="text"
+                                       placeholder="Search anything..."
+                                       class="w-full bg-transparent text-white px-4 py-2 rounded-lg focus:outline-none text-sm"
+                                       onfocus="expandNavSearch()"
+                                       onblur="contractNavSearch()">
+                            </div>
+                        </div>
+    
+                        <!-- Quick Access Links -->
+                        <div class="search-links absolute top-full left-0 right-0 mt-2">
+                            <div class="glass border border-white/10 rounded-lg p-2">
+                                <div class="text-xs text-gray-500 px-2 py-1">QUICK ACCESS</div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <!-- Quick access links content -->
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-blue-metal/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-blue-metal quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-blue-metal transition-colors">Characters</span>
+                                        </div>
+                                    </a>
+    
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-purple/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-purple quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-purple transition-colors">Homebrew</span>
+                                        </div>
+                                    </a>
+    
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-blue/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-blue quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-blue transition-colors">Encounters</span>
+                                        </div>
+                                    </a>
+    
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-green/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-green quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-green transition-colors">Campaigns</span>
+                                        </div>
+                                    </a>
+    
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-yellow/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-yellow quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-yellow transition-colors">Crafting</span>
+                                        </div>
+                                    </a>
+    
+                                    <a href="#" class="quick-link group block p-2 rounded-lg hover:bg-white/5">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-6 h-6 rounded-full bg-cyber-pink/20 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-cyber-pink quick-link-icon transition-transform duration-200"
+                                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-white group-hover:text-cyber-pink transition-colors">Rankings</span>
+                                        </div>
+                                    </a>
+    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Desktop Navigation Links -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="compendium.html"
+                       class="text-white hover:text-cyber-blue transition-colors duration-300">Compendium</a>
+                    <a href="charbuilder.html" class="text-white hover:text-cyber-green transition-colors duration-300">Character
+                        Builder</a>
+                    <a href="community.html"
+                       class="text-white hover:text-cyber-purple transition-colors duration-300">Community</a>
+                    <a href="gmtools.html" class="text-white hover:text-cyber-yellow transition-colors duration-300">GM
+                        Tools</a>
+    
+                    <button onclick="toggleModal()"
+                            class="sign-in-btn px-4 py-2 rounded-lg border transition-all duration-300">
+                        Sign In
+                    </button>
+                </div>
+                <!-- Mobile menu button and navigation rail -->
+                <div class="lg:hidden fixed top-[12px] right-6 z-50 w-[58px]">
+                    <div class="flex flex-col items-end">
+                        <button id="mobile-menu-toggle"
+                                class="text-white focus:outline-none p-2 rounded-lg border border-cyber-blue/50 hover:border-cyber-pink transition-colors duration-200 w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M4 6h16M4 12h16m-7 6h7"/>
+                            </svg>
+                        </button>
+                        <div id="mobile-nav-rail"
+                             class="hidden bg-cyber-dark/80 backdrop-blur-sm border border-t-0 border-cyber-blue/50 rounded-b-lg overflow-hidden w-full">
+                            <div class="flex flex-col items-center py-4 px-2 space-y-4">
+                                <button id="mobile-search-toggle"
+                                        class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </button>
+                                <a href="compendium.html"
+                                   class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253"/>
+                                    </svg>
+                                </a>
+                                <a href="charbuilder.html"
+                                   class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </a>
+                                <a href="community.html"
+                                   class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                </a>
+                                <a href="gmtools.html"
+                                   class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                    </svg>
+                                </a>
+                                <button onclick="toggleModal()"
+                                        class="text-white p-2 rounded-lg hover:bg-cyber-blue/20 transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="pt-32 px-6 relative z-10">
+        <div x-data="{ expanded: true }" class="flex w-full">
+            <!-- Sidebar -->
+            <div class="relative h-full z-10">
+                <button
+                    @click="expanded = !expanded"
+                    class="absolute -top-0 -left-0 z-20 p-2 rounded-2xl border border-cyber-blue/50 hover:border-cyber-pink transition-colors duration-200 theme-toggle"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"
+                        />
+                    </svg>
+                </button>
+                <div
+                    :class="{
+                        'w-64 opacity-100 sidebar-glow': expanded, 
+                        'w-0 opacity-0': !expanded 
+                    }"
+                    class="transition-all duration-300 ease-in-out h-full sidebar-glass overflow-hidden rounded-2xl"
+                >
+                    <nav class="p-4 pt-16">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    Character Options
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    Rulebooks
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    Homebrew
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    Character Generator
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    General Options
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-cyber-blue hover:text-cyber-pink transition-colors duration-200">
+                                    Export Character
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Spacer -->
+            <div class="w-14"></div>
+
+            <!-- Main Character Building Area -->
+            <!-- Main Content -->
+<!-- Main Content -->
+<main class="pt-32 px-6 relative z-10">
+    <!-- Character Basics Section -->
+    <div class="glass border border-cyber-blue/30 rounded-lg p-6 mb-6 transition-all duration-300">
+        <div class="flex flex-col lg:flex-row items-start gap-6">
+            <!-- Left Column: Image and Name -->
+            <div class="flex flex-col lg:items-start gap-4 w-full lg:w-auto">
+                <!-- Character Image -->
+                <div class="w-32 h-32 rounded-lg border border-cyber-pink/30 overflow-hidden group hover:border-cyber-pink transition-all duration-300">
+                    <div class="w-full h-full bg-cyber-dark/50 flex items-center justify-center">
+                        <button class="text-cyber-pink group-hover:text-cyber-blue transition-colors duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Character Name and Level -->
+                <div class="flex items-center gap-4 w-full">
+                    <input type="text" 
+                           placeholder="Character Name" 
+                           class="bg-transparent border-b-2 border-cyber-blue/30 text-2xl font-bold w-full 
+                                  focus:border-cyber-pink transition-colors duration-300 outline-none px-2 py-1">
+                    <div class="text-lg whitespace-nowrap">
+                        <span class="text-cyber-blue">Level</span>
+                        <span class="text-white ml-2">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Character Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+                <!-- Ancestry Selector -->
+                <div class="group">
+                    <label class="text-sm text-gray-400 mb-1 block">Ancestry</label>
+                    <button class="w-full glass border border-cyber-blue/30 rounded-lg p-3 text-left 
+                                 hover:border-cyber-pink transition-all duration-300 focus:outline-none
+                                 flex justify-between items-center group-hover:bg-cyber-dark/20">
+                        <span class="text-white">Select Ancestry</span>
+                        <svg class="w-5 h-5 text-cyber-blue group-hover:text-cyber-pink transition-colors duration-300" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Heritage Selector -->
+                <div class="group">
+                    <label class="text-sm text-gray-400 mb-1 block">Heritage</label>
+                    <button class="w-full glass border border-cyber-blue/30 rounded-lg p-3 text-left 
+                                 hover:border-cyber-pink transition-all duration-300 focus:outline-none
+                                 flex justify-between items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                        <span class="text-gray-500">Select Heritage</span>
+                        <svg class="w-5 h-5 text-gray-500" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Background Selector -->
+                <div class="group">
+                    <label class="text-sm text-gray-400 mb-1 block">Background</label>
+                    <button class="w-full glass border border-cyber-blue/30 rounded-lg p-3 text-left 
+                                 hover:border-cyber-pink transition-all duration-300 focus:outline-none
+                                 flex justify-between items-center group-hover:bg-cyber-dark/20">
+                        <span class="text-white">Select Background</span>
+                        <svg class="w-5 h-5 text-cyber-blue group-hover:text-cyber-pink transition-colors duration-300" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Class Selector -->
+                <div class="group">
+                    <label class="text-sm text-gray-400 mb-1 block">Class</label>
+                    <button class="w-full glass border border-cyber-blue/30 rounded-lg p-3 text-left 
+                                 hover:border-cyber-pink transition-all duration-300 focus:outline-none
+                                 flex justify-between items-center group-hover:bg-cyber-dark/20">
+                        <span class="text-white">Select Class</span>
+                        <svg class="w-5 h-5 text-cyber-blue group-hover:text-cyber-pink transition-colors duration-300" 
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass border border-cyber-blue/30 rounded-lg p-6 mb-6 transition-all duration-300">
+        <div class="flex">
+            <!-- Level Progression Table -->
+            <div x-data="{ isOpen: true }" 
+                 class="glass border border-cyber-blue/30 rounded-lg transition-all duration-300 w-[30%]">
+                <button @click="isOpen = !isOpen" 
+                        class="w-full p-4 flex items-center justify-between text-xl hover:text-cyber-pink transition-colors duration-300">
+                    <span class="text-cyber-blue">Level Progression</span>
+                    <svg class="w-6 h-6 transform transition-transform duration-300 text-cyber-blue"
+                         :class="{ 'rotate-180': !isOpen }"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                
+                <div x-show="isOpen" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform -translate-y-2"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-300"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform -translate-y-2"
+                     class="p-6 border-t border-cyber-blue/30">
+                    <div class="overflow-x-auto max-h-[calc(100vh-300px)]">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-cyber-blue/30">
+                                    <th class="text-left py-2 px-4 text-gray-400 font-normal">Level</th>
+                                    <th class="text-left py-2 px-4 text-gray-400 font-normal">Features</th>
+                                    <th class="text-left py-2 px-4 text-gray-400 font-normal">Choices</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-cyber-blue/10">
+                                    <td class="py-4 px-4 text-cyber-pink">1</td>
+                                    <td class="py-4 px-4">
+                                        <div class="text-white">Ancestry Feat</div>
+                                        <div class="text-white">Class Features</div>
+                                    </td>
+                                    <td class="py-4 px-4">
+                                        <!-- Choice buttons/indicators -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spacer div -->
+            <div class="w-[70%]"></div>
+        </div>
+    </div>
+</main>
+
+    <!-- Keep the same footer section from compendium.html -->
+</body>
+</html>
