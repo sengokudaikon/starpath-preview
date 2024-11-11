@@ -4,4 +4,4 @@ package-lock.json
 /.vscode
 /nexus.html
 /pathbuilder.html
-/pathbuilder/
+/pathbuilder/*
