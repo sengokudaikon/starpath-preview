@@ -15,18 +15,16 @@
 }
 
 :root {
-  /* Solarpunk palette */
-  --solar-purple: #8b269d;  /* Rich purple for brand identity */
-  --solar-red: #e91e47;     /* Vibrant red for brand identity */
-  --solar-rose: #F48FB1;    /* Soft pink for accents */
-  --solar-lavender: #B39DDB; /* Light purple for secondary elements */
-  --solar-gold: #FFD700;    /* Gold for highlights */
-  /* Supporting natural colors */
-  --solar-sage: #A5D6A7;    /* Soft plant green */
-  --solar-mint: #80CBC4;    /* Fresh mint green */
-  --solar-sky: #81D4FA;     /* Light sky blue */
-  --solar-dawn: #FFE0B2;    /* Warm morning light */
-  --solar-cream: #FFF8E1;
+  /* Solarpunk palette - updated with new natural and sustainable colors */
+  --solar-green: #7FB069;      /* Vibrant natural green */
+  --solar-gold: #FFB627;       /* Warm sunlight */
+  --solar-teal: #2DD881;       /* Fresh vegetation */
+  --solar-blue: #49B6FF;       /* Clear sky */
+  --solar-amber: #F9C846;      /* Honey/natural warmth */
+  --solar-leaf: #98CE00;       /* Young leaf green */
+  --solar-earth: #8B5E3C;      /* Rich soil */
+  --solar-water: #6ECEDA;      /* Clean water */
+  --solar-cream: #FFF8E1;      /* Light background */
   --solar-glass: rgba(255, 255, 255, 0.8);
 }
 
@@ -52,8 +50,8 @@ body {
 
 :root:not(.dark) body {
   background-color: var(--solar-cream);
-  background-image: linear-gradient(to right, #f0f0f0 1px, transparent 1px),
-                    linear-gradient(to bottom, #4e4e4e 1px, transparent 1px);
+  background-image: linear-gradient(to right, rgba(127, 176, 105, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(127, 176, 105, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
@@ -72,8 +70,8 @@ body {
 }
 :root:not(.dark) .glass.border {
   backdrop-filter: blur(10px);
-  background: rgba(8, 7, 7, 0.8);
-  border: 1px solid rgba(163, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(127, 176, 105, 0.3);
 }
 :root:not(.dark) .glass {
   background: rgba(255, 255, 255, 0.8);
@@ -108,17 +106,16 @@ body {
 :root:not(.dark) .animated-border {
   background: linear-gradient(
     45deg,
-    var(--solar-purple),
-    var(--solar-red),
-    var(--solar-rose),
-    var(--solar-lavender),
-    var(--solar-mint),
-    var(--solar-sky),
+    var(--solar-green),
+    var(--solar-teal),
+    var(--solar-blue),
+    var(--solar-water),
+    var(--solar-leaf)
   );
   background-size: 300% 300%;
   box-shadow: 
-    0 0 20px rgba(163, 0, 0, 0.3),
-    0 0 40px rgba(0, 229, 255, 0.1);
+    0 0 20px rgba(127, 176, 105, 0.3),
+    0 0 40px rgba(45, 216, 129, 0.1);
 }
 
 .animated-border::before {
@@ -176,8 +173,8 @@ body {
 }
 
 :root:not(.dark) .modal-glass {
-  background: rgba(8, 7, 7, 0.95);
-  border: 1px solid rgba(163, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(127, 176, 105, 0.2);
 }
 
 .modal-glass::before {
@@ -208,9 +205,9 @@ body {
 :root:not(.dark) .modal-glass::before {
   background: linear-gradient(
     135deg,
-    rgba(163, 0, 0, 0.2),
-    rgba(0, 229, 255, 0.2),
-    rgba(163, 0, 0, 0.2)
+    rgba(127, 176, 105, 0.2),
+    rgba(45, 216, 129, 0.2),
+    rgba(73, 182, 255, 0.2)
   );
 }
 
@@ -342,9 +339,9 @@ body {
 }
 
 :root:not(.dark) .provider-button {
-  background: rgba(8, 7, 7, 0.8);
-  border: 1px solid rgba(163, 0, 0, 0.3);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(127, 176, 105, 0.3);
+  color: var(--solar-earth);
 }
 
 .provider-button::after {
@@ -403,9 +400,9 @@ body {
 }
 
 :root:not(.dark) .auth-input {
-  background: rgba(8, 7, 7, 0.8);
-  border: 1px solid rgba(163, 0, 0, 0.3);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(127, 176, 105, 0.3);
+  color: var(--solar-earth);
 }
 .auth-input:focus {
   outline: none;
@@ -873,8 +870,8 @@ footer a:hover svg {
 }
 
 :root:not(.dark) .sign-in-btn {
-  border-color: var(--solar-purple);
-  color: var(--solar-red);
+  border-color: var(--solar-green);
+  color: var(--solar-earth);
 }
 
 @keyframes cyberpunkBreath {
@@ -1003,15 +1000,15 @@ footer a:hover svg {
 
 /* Light Theme (Fantasy) */
 :root:not(.dark) .sign-in-btn {
-  border: 1px solid rgba(163, 0, 0, 0.3);
-  background: rgba(8, 7, 7, 0.8);
+  border: 1px solid rgba(127, 176, 105, 0.3);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 :root:not(.dark) .sign-in-btn:hover {
-  border-color: var(--solar-red);
+  border-color: var(--solar-green);
   box-shadow: 
-    0 0 15px rgba(163, 0, 0, 0.2),
-    0 0 30px rgba(163, 0, 0, 0.1);
+    0 0 15px rgba(127, 176, 105, 0.2),
+    0 0 30px rgba(45, 216, 129, 0.1);
   transform: translateY(-2px);
 }
 
@@ -1025,7 +1022,7 @@ footer a:hover svg {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(163, 0, 0, 0.2),
+    rgba(127, 176, 105, 0.2),
     transparent
   );
   transition: 0.5s;

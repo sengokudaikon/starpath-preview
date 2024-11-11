@@ -2,3 +2,6 @@
 package-lock.json
 /.idea
 /.vscode
+/nexus.html
+/pathbuilder.html
+/pathbuilder/
